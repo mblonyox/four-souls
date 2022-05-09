@@ -1,15 +1,15 @@
 import { GameObjects, Scene } from "phaser";
 
 export enum CardType {
-  Bonus = 'bonus',
-  Char = 'char',
-  Eternal = 'eternal',
-  Loot = 'loot',
-  Monster = 'monster',
-  Treasure = 'treasure'
+  Bonus = "bonus",
+  Char = "char",
+  Eternal = "eternal",
+  Loot = "loot",
+  Monster = "monster",
+  Treasure = "treasure",
 }
 
-export const UNKNOWN_CARD = 'unknown';
+export const UNKNOWN_CARD = "unknown";
 
 export const CARD_WIDTH = 500;
 export const CARD_HEIGHT = 693;
@@ -24,7 +24,7 @@ export default class Card extends GameObjects.Image {
     x: number,
     y: number,
     private back: CardType,
-    private face: string = UNKNOWN_CARD,
+    private face: string = UNKNOWN_CARD
   ) {
     super(scene, x, y, back);
     scene.add.existing(this);
@@ -33,7 +33,9 @@ export default class Card extends GameObjects.Image {
   }
 
   static preloadCardBacks(scene: Scene) {
-    Object.values(CardType).forEach(type => scene.load.image(type, `/assets/images/backs/${type}Back.png`));
+    Object.values(CardType).forEach((type) =>
+      scene.load.image(type, `/assets/images/backs/${type}Back.png`)
+    );
     scene.load.image(UNKNOWN_CARD, `/assets/images/${UNKNOWN_CARD}.png`);
   }
 
@@ -43,8 +45,9 @@ export default class Card extends GameObjects.Image {
     } else {
       this.lazyLoaded = true;
       super.setTexture(UNKNOWN_CARD, frame);
-      this.scene.load.image(key, `/assets/images/${key}.png`)
-        .once('complete', () => this.setTexture(key, frame))
+      this.scene.load
+        .image(key, `/assets/images/${key}.png`)
+        .once("complete", () => this.setTexture(key, frame))
         .start();
     }
     return this;
@@ -59,7 +62,7 @@ export default class Card extends GameObjects.Image {
       onYoyo: () => {
         this.isFaceUp = !this.isFaceUp;
         this.setTexture(this.isFaceUp ? this.face : this.back);
-      }
+      },
     });
   }
 
@@ -68,7 +71,7 @@ export default class Card extends GameObjects.Image {
       targets: this,
       rotation: Math.PI / 4,
       duration: 300,
-      onComplete: () => this.isTapped = true
+      onComplete: () => (this.isTapped = true),
     });
   }
 
@@ -77,7 +80,7 @@ export default class Card extends GameObjects.Image {
       targets: this,
       rotation: 0,
       duration: 300,
-      onComplete: () => this.isTapped = false
+      onComplete: () => (this.isTapped = false),
     });
   }
 }

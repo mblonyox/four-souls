@@ -103,7 +103,7 @@ export const base_loot = [
   "XVTheDevil",
   "XWheelofFortune",
   "XXITheWorld",
-  "XXJudgement"
+  "XXJudgement",
 ];
 
 export const base_monsters = [
@@ -213,8 +213,8 @@ export const base_monsters = [
   "WeNeedtogoDeeper",
   "Wizoob",
   "Wrath",
-  "XLFLoor"
-]
+  "XLFLoor",
+];
 
 export const base_treasure = [
   "BabyHaunt.png",
@@ -321,5 +321,5 @@ export const base_treasure = [
   "TheresOptions.png",
   "TheShovel.png",
   "TrinityShield.png",
-  "TwoofClubs"
+  "TwoofClubs",
 ];

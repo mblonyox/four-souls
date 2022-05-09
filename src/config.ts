@@ -1,4 +1,4 @@
-import { Types, Scale, AUTO } from "phaser"
+import { Types, Scale, AUTO } from "phaser";
 // import MenuScene from "./scenes/menu";
 import TableScene from "./scenes/table";
 
@@ -11,9 +11,9 @@ const gameConfig: Types.Core.GameConfig = {
     mode: Scale.FIT,
     autoCenter: Scale.CENTER_BOTH,
     width: VIEW_WIDTH,
-    height: VIEW_HEIGHT
+    height: VIEW_HEIGHT,
   },
-  scene: [TableScene]
+  scene: [TableScene],
 };
 
 export default gameConfig;
