@@ -4,6 +4,7 @@ import { base_loot, base_monsters, base_treasure } from "../data/cards";
 import Card, { CardType } from "../game_objects/card";
 import Deck from "../game_objects/deck";
 import Hand from "../game_objects/hand";
+import Items from "../game_objects/items";
 import Pile from "../game_objects/pile";
 import Slot from "../game_objects/slot";
 export default class TableScene extends Scene {
@@ -25,10 +26,10 @@ export default class TableScene extends Scene {
   p2Hand?: Hand;
   p3Hand?: Hand;
   p4Hand?: Hand;
-  p1Items?: GameObjects.Group;
-  p2Items?: GameObjects.Group;
-  p3Items?: GameObjects.Group;
-  p4Items?: GameObjects.Group;
+  p1Items?: Items;
+  p2Items?: Items;
+  p3Items?: Items;
+  p4Items?: Items;
   p1Souls?: GameObjects.Group;
   p2Souls?: GameObjects.Group;
   p3Souls?: GameObjects.Group;
@@ -105,10 +106,10 @@ export default class TableScene extends Scene {
     );
     this.p3Hand = new Hand(this, this.width / 4, 30, 0x00ff00, true);
     this.p4Hand = new Hand(this, (this.width * 3) / 4, 30, 0xffff00, true);
-    this.p1Items = this.add.group();
-    this.p2Items = this.add.group();
-    this.p3Items = this.add.group();
-    this.p4Items = this.add.group();
+    this.p1Items = new Items(this, this.width * 3/4, this.height * 3/4, 0xff0000);
+    this.p2Items = new Items(this, this.width/4, this.height * 3/4, 0x0000ff);
+    this.p3Items = new Items(this, this.width/4, this.height/4, 0x00ff00);
+    this.p4Items = new Items(this, this.width * 3/4, this.height/4, 0xffff00);
     this.p1Souls = this.add.group();
     this.p2Souls = this.add.group();
     this.p3Souls = this.add.group();
