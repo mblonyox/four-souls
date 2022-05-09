@@ -5,6 +5,7 @@ import Card, { CardType } from "../game_objects/card";
 import Deck from "../game_objects/deck";
 import Hand from "../game_objects/hand";
 import Pile from "../game_objects/pile";
+import Slot from "../game_objects/slot";
 export default class TableScene extends Scene {
   width: number;
   height: number;
@@ -13,11 +14,12 @@ export default class TableScene extends Scene {
 
   treasureDeck?: Deck;
   treasureDiscard?: Pile;
-  treasureSlot?: GameObjects.Group;
+  treasureSlot?: Slot;
   lootDeck?: Deck;
   lootDiscard?: Pile;
   monsterDeck?: Deck;
   monsterDiscard?: Pile;
+  monsterSlot?: Slot;
   bonusSoul?: GameObjects.Group;
   p1Hand?: Hand;
   p2Hand?: Hand;
@@ -54,7 +56,7 @@ export default class TableScene extends Scene {
 
     this.treasureDeck = new Deck(this, 200, this.height / 2, 0xb78c3f);
     this.treasureDiscard = new Pile(this, 80, this.height / 2, 0xb78c3f);
-    this.treasureSlot = this.add.group();
+    this.treasureSlot = new Slot(this, 320, this.height / 2, 0xb78c3f);
     this.lootDeck = new Deck(
       this,
       this.width / 2 - 60,
@@ -78,6 +80,14 @@ export default class TableScene extends Scene {
       this.width - 80,
       this.height / 2,
       0x34312e
+    );
+    this.monsterSlot = new Slot(
+      this,
+      this.width - 320,
+      this.height / 2,
+      0x34312e,
+      2,
+      true
     );
     this.p1Hand = new Hand(
       this,
@@ -150,10 +160,43 @@ export default class TableScene extends Scene {
         return card;
       })
     );
-    this.time.delayedCall(1000, () => {
-      this.treasureDeck?.shuffle().playShuffle();
-      this.lootDeck?.shuffle().playShuffle();
-      this.monsterDeck?.shuffle().playShuffle();
+    this.time.delayedCall(500, () => {
+      this.treasureDeck
+        ?.shuffle()
+        .playShuffle()
+        .then(() => {
+          const t0 = this.treasureDeck?.getLastNth(0, true);
+          const t1 = this.treasureDeck?.getLastNth(1, true);
+          this.treasureDeck?.removeMultiple([t0, t1]);
+          this.treasureSlot?.piles[0].addMultiple([t0]);
+          this.treasureSlot?.piles[1].addMultiple([t1]);
+          t0.flip();
+          t1.flip();
+        });
+      this.lootDeck
+        ?.shuffle()
+        .playShuffle()
+        .then(() => {
+          [this.p1Hand, this.p2Hand, this.p3Hand, this.p4Hand].forEach(
+            (hand) => {
+              draw(this.lootDeck!, hand!);
+              draw(this.lootDeck!, hand!);
+              draw(this.lootDeck!, hand!);
+            }
+          );
+        });
+      this.monsterDeck
+        ?.shuffle()
+        .playShuffle()
+        .then(() => {
+          const m0 = this.monsterDeck?.getLastNth(0, true);
+          const m1 = this.monsterDeck?.getLastNth(1, true);
+          this.monsterDeck?.removeMultiple([m0, m1]);
+          this.monsterSlot?.piles[0].addMultiple([m0]);
+          this.monsterSlot?.piles[1].addMultiple([m1]);
+          m0.flip();
+          m1.flip();
+        });
     });
     const draw = (deck: Deck, hand: Hand) => {
       const card = deck.getLast(true) as Card;

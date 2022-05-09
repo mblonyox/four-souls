@@ -1,7 +1,7 @@
 import { GameObjects, Scene } from "phaser";
 import Card, { CARD_HEIGHT, CARD_WIDTH } from "./card";
 
-const PILE_CARD_SCALE = 1 / 5;
+export const PILE_CARD_SCALE = 1 / 5;
 
 export default class Pile extends GameObjects.Group {
   constructor(
