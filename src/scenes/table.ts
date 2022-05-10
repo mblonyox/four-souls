@@ -1,6 +1,9 @@
+import { ref } from "firebase/database";
 import { GameObjects, Scene } from "phaser";
 import { VIEW_HEIGHT, VIEW_WIDTH } from "../config";
 import { base_loot, base_monsters, base_treasure } from "../data/cards";
+import { db } from "../firebase";
+import FourSoulsClient from "../game/client";
 import Card, { CardType } from "../game_objects/card";
 import Deck from "../game_objects/deck";
 import Hand from "../game_objects/hand";
@@ -48,6 +51,22 @@ export default class TableScene extends Scene {
   }
 
   create() {
+    const gameClient = new FourSoulsClient(ref(db, "/game/test2"));
+    gameClient.isHost = true;
+    gameClient.user_uid = this.registry.get("user_uid");
+
+    gameClient.init({
+      p1: { userName: "Player1", userUid: "uid1" },
+      p2: { userName: "Player1", userUid: "uid1" },
+    }).start();
+
+    this.registry.events.on(
+      "setdata",
+      (_parent: any, _key: string, data: any) => {
+        if (_key == "user_uid") gameClient.user_uid = data;
+      }
+    );
+
     const playmat = this.add.image(0, 0, "playmat");
     playmat.setOrigin(0, 0);
     playmat.displayWidth = this.width;
@@ -106,10 +125,25 @@ export default class TableScene extends Scene {
     );
     this.p3Hand = new Hand(this, this.width / 4, 30, 0x00ff00, true);
     this.p4Hand = new Hand(this, (this.width * 3) / 4, 30, 0xffff00, true);
-    this.p1Items = new Items(this, this.width * 3/4, this.height * 3/4, 0xff0000);
-    this.p2Items = new Items(this, this.width/4, this.height * 3/4, 0x0000ff);
-    this.p3Items = new Items(this, this.width/4, this.height/4, 0x00ff00);
-    this.p4Items = new Items(this, this.width * 3/4, this.height/4, 0xffff00);
+    this.p1Items = new Items(
+      this,
+      (this.width * 3) / 4,
+      (this.height * 3) / 4,
+      0xff0000
+    );
+    this.p2Items = new Items(
+      this,
+      this.width / 4,
+      (this.height * 3) / 4,
+      0x0000ff
+    );
+    this.p3Items = new Items(this, this.width / 4, this.height / 4, 0x00ff00);
+    this.p4Items = new Items(
+      this,
+      (this.width * 3) / 4,
+      this.height / 4,
+      0xffff00
+    );
     this.p1Souls = this.add.group();
     this.p2Souls = this.add.group();
     this.p3Souls = this.add.group();

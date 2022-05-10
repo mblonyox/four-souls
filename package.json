@@ -14,8 +14,10 @@
   },
   "dependencies": {
     "chance": "^1.1.8",
+    "firebase": "^9.8.0",
     "just-clone": "^5.0.1",
     "phaser": "^3.55.2",
-    "phaser3-rex-plugins": "^1.1.69"
+    "phaser3-rex-plugins": "^1.1.69",
+    "symmetry": "^0.6.0"
   }
 }
