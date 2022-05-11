@@ -1,5 +1,6 @@
 import { Chance } from "chance";
 import { base_loot, base_monsters, base_treasure } from "../data/cards";
+import { DECK_SLOT_SETUP_STEP } from "./steps";
 
 export type PlayerID = "p1" | "p2" | "p3" | "p4";
 
@@ -104,14 +105,14 @@ export function initializeState(players: {
       base_treasure.map((name) => ({ id: chance.string(), name }))
     ),
     treasureDiscard: [],
-    treasureSlot: [[]],
+    treasureSlot: [[], []],
     monsterDeck: chance.shuffle(
       base_monsters.map((name) => ({ id: chance.string(), name }))
     ),
     monsterDiscard: [],
-    monsterSlot: [[]],
+    monsterSlot: [[], []],
     effectStack: [],
-    stepQueue: [],
+    stepQueue: [{ name: DECK_SLOT_SETUP_STEP }],
     triggerEffects: {},
     randomSeed,
   };

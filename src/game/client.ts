@@ -1,24 +1,26 @@
 import {
   DatabaseReference,
+  get,
   onChildAdded,
-  onValue,
   push,
   serverTimestamp,
   Unsubscribe,
 } from "firebase/database";
 import clone from "just-clone";
 import { Events } from "phaser";
-import { applyPatch, createPatch } from "symmetry";
+import { applyPatch, createPatch, OuterPatch } from "symmetry";
 import { GameState, initializeState, PlayerID } from "./state";
 import { steps } from "./steps";
 
 export default class FourSoulsClient extends Events.EventEmitter {
   private unsubscribeDb: Unsubscribe;
   private intervalId?: number;
+  private debounceId?: number;
 
   user_uid?: string;
   isHost?: boolean;
 
+  patches: OuterPatch[] = [];
   currentState?: GameState;
   prevState?: GameState;
 
@@ -33,13 +35,19 @@ export default class FourSoulsClient extends Events.EventEmitter {
       } else {
         this.currentState = applyPatch(this.currentState, patch);
       }
+      this.patches.push(patch);
+      clearTimeout(this.debounceId);
+      this.debounceId = window.setTimeout(() => {
+        this.debounceId = undefined;
+        this.emit("update", this.currentState);
+      }, 300);
     });
   }
 
   init(players: {
     [p in PlayerID]?: { userUid: string; userName: string };
   }): this {
-    onValue(this.gameRef, (snapshot) => {
+    get(this.gameRef).then((snapshot) => {
       if (!snapshot.exists()) {
         const state = initializeState(players);
         this.pushNextState(state);

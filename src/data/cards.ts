@@ -323,3 +323,28 @@ export const base_treasure = [
   "TrinityShield",
   "TwoofClubs",
 ];
+
+export const base_none_monster_monster_cards = [
+  "Ambush",
+  "Chest1",
+  "Chest2",
+  "CursedChest",
+  "CurseofAmnesia",
+  "CurseofGreed",
+  "CurseofLoss",
+  "CurseofPain",
+  "CurseoftheBlind",
+  "DarkChest1",
+  "DarkChest2",
+  "DealWithTheDevil",
+  "GoldChest1",
+  "GoldChest2",
+  "Greed!",
+  "IcanSeeForever",
+  "MegaTrollBomb",
+  "SecretRoom",
+  "ShopUpgrade",
+  "TrollBombs",
+  "WeNeedtogoDeeper",
+  "XLFLoor",
+]

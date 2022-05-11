@@ -1,13 +1,13 @@
+import { Chance } from "chance";
 import { ref } from "firebase/database";
 import { GameObjects, Scene } from "phaser";
 import { VIEW_HEIGHT, VIEW_WIDTH } from "../config";
 import { base_loot, base_monsters, base_treasure } from "../data/cards";
 import { db } from "../firebase";
 import FourSoulsClient from "../game/client";
+import { GameState } from "../game/state";
 import Card, { CardType } from "../game_objects/card";
 import Deck from "../game_objects/deck";
-import Hand from "../game_objects/hand";
-import Items from "../game_objects/items";
 import Pile from "../game_objects/pile";
 import Player from "../game_objects/player";
 import Slot from "../game_objects/slot";
@@ -42,7 +42,7 @@ export default class TableScene extends Scene {
   }
 
   create() {
-    const gameClient = new FourSoulsClient(ref(db, "/game/test2"));
+    const gameClient = new FourSoulsClient(ref(db, "/game/test/" + new Chance().name()));
     gameClient.isHost = true;
     gameClient.user_uid = this.registry.get("user_uid");
 
@@ -52,6 +52,21 @@ export default class TableScene extends Scene {
         p2: { userName: "Player1", userUid: "uid1" },
       })
       .start();
+
+    gameClient.on("update", (state: GameState) => {
+      this.lootDeck?.update(state.lootDeck);
+      this.lootDiscard?.update(state.lootDiscard);
+      this.treasureDeck?.update(state.treasureDeck);
+      this.treasureDiscard?.update(state.treasureDiscard);
+      this.treasureSlot?.update(state.treasureSlot);
+      this.monsterDeck?.update(state.monsterDeck);
+      this.monsterDiscard?.update(state.monsterDiscard);
+      this.monsterSlot?.update(state.monsterSlot);
+      if (state.playerStates.p1) this.p1?.update(state.playerStates.p1);
+      if (state.playerStates.p2) this.p2?.update(state.playerStates.p2);
+      if (state.playerStates.p3) this.p3?.update(state.playerStates.p3);
+      if (state.playerStates.p4) this.p4?.update(state.playerStates.p4);
+    });
 
     const playmat = this.add.image(0, 0, "playmat");
     playmat.setOrigin(0, 0);
@@ -132,7 +147,7 @@ export default class TableScene extends Scene {
     base_treasure.forEach((name) => {
       const card = new Card(
         this,
-        -500,
+        this.width / 2,
         -500,
         CardType.Treasure,
         `base/treasure/${name}`
@@ -142,7 +157,7 @@ export default class TableScene extends Scene {
     base_loot.forEach((name) => {
       const card = new Card(
         this,
-        -500,
+        this.width / 2,
         -500,
         CardType.Loot,
         `base/loot/${name}`
@@ -152,7 +167,7 @@ export default class TableScene extends Scene {
     base_monsters.forEach((name) => {
       const card = new Card(
         this,
-        -500,
+        this.width / 2,
         -500,
         CardType.Monster,
         `base/monsters/${name}`
