@@ -1,36 +1,38 @@
 import { GameObjects, Scene } from "phaser";
+import { CardData } from "../game/state";
 import Card, { CARD_HEIGHT, CARD_WIDTH } from "./card";
 
-const DECK_CARD_SCALE = 1 / 5;
-
-export default class Deck extends GameObjects.Group {
-  text: GameObjects.Text;
-
+export default class Deck {
   private isShuffling: boolean = false;
+  private counterText: GameObjects.Text;
+  private deckArea: GameObjects.Graphics;
 
   constructor(
-    scene: Scene,
-    public x: number,
-    public y: number,
-    public color: number,
-    children?: Card[]
+    public scene: Scene,
+    public x: number = 0,
+    public y: number = 0,
+    public color: number = 0,
+    public cardScale: number = 0.2,
+    public cards: Card[] = []
   ) {
-    super(scene, children);
-    scene.add.existing(this);
-    this.drawDeckArea();
-    this.text = scene.add
-      .text(x, y, (children?.length ?? 0).toString(), {
+    this.deckArea = this.drawDeckArea();
+    this.counterText = this.drawCounterText();
+  }
+
+  private drawCounterText(): GameObjects.Text {
+    return this.scene.add
+      .text(this.x, this.y, (this.cards.length ?? 0).toString(), {
         fontFamily: "EdMundMcMillen",
         fontSize: "2rem",
       })
       .setOrigin(0.5, 0.5);
   }
 
-  private drawDeckArea() {
+  private drawDeckArea(): GameObjects.Graphics {
     const padding = 5;
-    const width = CARD_WIDTH * DECK_CARD_SCALE;
-    const height = CARD_HEIGHT * DECK_CARD_SCALE;
-    this.scene.add
+    const width = CARD_WIDTH * this.cardScale;
+    const height = CARD_HEIGHT * this.cardScale;
+    return this.scene.add
       .graphics()
       .setPosition(this.x, this.y)
       .lineStyle(2, this.color)
@@ -51,71 +53,54 @@ export default class Deck extends GameObjects.Group {
       );
   }
 
-  addMultiple(children: Card[], addToScene?: boolean): this {
-    super.addMultiple(children, addToScene);
-    this.arrange();
-    return this;
-  }
-
-  removeMultiple(
-    children: Card[],
-    removeFromScene?: boolean,
-    destroyChild?: boolean
-  ): this {
-    children.forEach((child) => {
-      super.remove(child, removeFromScene, destroyChild);
+  public update(deckState: CardData[]): Promise<void> {
+    this.cards = deckState.map(({ name }) => {
+      const card = this.scene.children.getByName(name) as Card;
+      card.isFaceUp = false;
+      card.isTapped = false;
+      return card;
     });
-    this.arrange();
-    return this;
+    return this.arrange();
   }
 
-  arrange() {
-    const total = this.children.size;
-    this.text
+  public arrange(): Promise<void> {
+    const total = this.cards.length;
+    this.counterText
       .setText(total.toString())
       .setDepth(total)
       .setY(this.y - total / 2);
-    const promises: Promise<void>[] = [];
-    this.children.iterate((c, i) => {
-      const card = c as Card;
-      promises.push(
-        new Promise<void>((res) => {
+    const promises = this.cards.map((card, i) => {
+      card.setDepth(i);
+      return new Promise<void>((res) => {
+        this.scene.tweens
+          .add({
+            targets: card,
+            x: this.x,
+            y: this.y - i / 2,
+            scale: this.cardScale,
+            duration: 300,
+          })
+          .once("complete", () => res());
+      });
+    });
+    return Promise.all(promises).then(() => {});
+  }
+
+  public shuffle(): Promise<void> {
+    if (!this.isShuffling) {
+      this.isShuffling = true;
+      const promises = this.cards.map((card, _i) => {
+        return new Promise<void>((res) => {
           this.scene.tweens
             .add({
               targets: card,
-              x: this.x,
-              y: this.y - i / 2,
-              scale: DECK_CARD_SCALE,
-              duration: 300,
+              x: card.x + (Math.random() - 0.5) * CARD_WIDTH * this.cardScale,
+              yoyo: true,
+              repeat: 5,
+              duration: 30,
             })
             .once("complete", () => res());
-        })
-      );
-      card.setDepth(i);
-    });
-    return Promise.all(promises);
-  }
-
-  playShuffle() {
-    if (!this.isShuffling) {
-      this.isShuffling = true;
-      const promises: Promise<void>[] = [];
-      this.children.iterate((c, _i) => {
-        promises.push(
-          new Promise<void>((res) => {
-            this.scene.tweens
-              .add({
-                targets: c,
-                x:
-                  (c as Card).x +
-                  (Math.random() - 0.5) * CARD_WIDTH * DECK_CARD_SCALE,
-                yoyo: true,
-                repeat: 5,
-                duration: 30,
-              })
-              .once("complete", () => res());
-          })
-        );
+        });
       });
       return Promise.all(promises).then(() => {
         this.isShuffling = false;
@@ -123,5 +108,10 @@ export default class Deck extends GameObjects.Group {
       });
     }
     return Promise.resolve();
+  }
+
+  public destroy(fromScene?: boolean) {
+    this.counterText.destroy(fromScene);
+    this.deckArea.destroy(fromScene);
   }
 }

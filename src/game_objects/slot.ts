@@ -1,6 +1,7 @@
 import { Scene } from "phaser";
+import { CardData } from "../game/state";
 import { CARD_WIDTH } from "./card";
-import Pile, { PILE_CARD_SCALE } from "./pile";
+import Pile from "./pile";
 
 export default class Slot {
   piles: Pile[] = [];
@@ -10,18 +11,31 @@ export default class Slot {
     public x: number = 0,
     public y: number = 0,
     public color: number = 0xffffff,
-    public size: number = 2,
-    public alignRight: boolean = false
+    public rtl: boolean = false,
+    public cardScale: number = 0.2,
+    initialSize: number = 2
   ) {
-    for (let i = 0; i < size; i++) {
-      const dx = i * (CARD_WIDTH * PILE_CARD_SCALE + 20);
-      const pile = new Pile(
-        scene,
-        this.x + (alignRight ? -dx: dx) ,
-        this.y,
-        color
-      );
-      this.piles.push(pile);
+    for (let i = 0; i < initialSize; i++) {
+      this.piles.push(this.createPile(i));
     }
+  }
+
+  private createPile(i: number) {
+    const dx = i * (CARD_WIDTH * this.cardScale + 20);
+    return new Pile(
+      this.scene,
+      this.x + (this.rtl ? -dx : dx),
+      this.y,
+      this.color,
+      this.cardScale
+    );
+  }
+
+  public update(state: CardData[][]): Promise<void> {
+    while (state.length > this.piles.length) {
+      this.piles.push(this.createPile(this.piles.length));
+    }
+    const promises = state.map((cards, i) => this.piles[i].update(cards));
+    return Promise.all(promises).then(() => {});
   }
 }

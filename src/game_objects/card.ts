@@ -15,9 +15,33 @@ export const CARD_WIDTH = 500;
 export const CARD_HEIGHT = 693;
 
 export default class Card extends GameObjects.Image {
-  isFaceUp: boolean = false;
-  isTapped: boolean = false;
-  private lazyLoaded: boolean = false;
+  private _isRotated: boolean = false;
+  private _isFaceUp: boolean = false;
+  private _isTapped: boolean = false;
+  private _lazyLoaded: boolean = false;
+
+  public get isRotated() {
+    return this._isRotated;
+  }
+
+  public set isRotated(value) {
+    if (value == this.isRotated) return;
+  }
+
+  public get isFaceUp() {
+    return this._isFaceUp;
+  }
+  public set isFaceUp(value: boolean) {
+    if (value !== this._isFaceUp) this.flip();
+  }
+  public get isTapped() {
+    return this._isTapped;
+  }
+  public set isTapped(value: boolean) {
+    if (value == this._isTapped) return;
+    if (value) this.tap();
+    else this.untap();
+  }
 
   constructor(
     scene: Scene,
@@ -40,10 +64,10 @@ export default class Card extends GameObjects.Image {
   }
 
   setTexture(key: string, frame?: string | number): this {
-    if (this.lazyLoaded || key in CardType || key == UNKNOWN_CARD) {
+    if (this._lazyLoaded || key in CardType || key == UNKNOWN_CARD) {
       super.setTexture(key, frame);
     } else {
-      this.lazyLoaded = true;
+      this._lazyLoaded = true;
       super.setTexture(UNKNOWN_CARD, frame);
       this.scene.load
         .image(key, `/assets/images/${key}.png`)
@@ -60,8 +84,8 @@ export default class Card extends GameObjects.Image {
       duration: 150,
       yoyo: true,
       onYoyo: () => {
-        this.isFaceUp = !this.isFaceUp;
-        this.setTexture(this.isFaceUp ? this.face : this.back);
+        this._isFaceUp = !this._isFaceUp;
+        this.setTexture(this._isFaceUp ? this.face : this.back);
       },
     });
   }
@@ -71,7 +95,7 @@ export default class Card extends GameObjects.Image {
       targets: this,
       rotation: Math.PI / 4,
       duration: 300,
-      onComplete: () => (this.isTapped = true),
+      onComplete: () => (this._isTapped = true),
     });
   }
 
@@ -80,7 +104,18 @@ export default class Card extends GameObjects.Image {
       targets: this,
       rotation: 0,
       duration: 300,
-      onComplete: () => (this.isTapped = false),
+      onComplete: () => (this._isTapped = false),
+    });
+  }
+
+  rotate() {
+    this.scene.tweens.add({
+      targets: this,
+      rotation:
+        (!this._isRotated ? Math.PI / 2 : 0) +
+        (this._isTapped ? Math.PI / 4 : 0),
+      duration: 300,
+      onComplete: () => (this._isRotated = !this._isRotated),
     });
   }
 }
