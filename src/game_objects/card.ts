@@ -93,7 +93,7 @@ export default class Card extends GameObjects.Image {
   tap() {
     this.scene.tweens.add({
       targets: this,
-      rotation: Math.PI / 4,
+      rotation: Math.PI / 2,
       duration: 300,
       onComplete: () => (this._isTapped = true),
     });
@@ -112,8 +112,8 @@ export default class Card extends GameObjects.Image {
     this.scene.tweens.add({
       targets: this,
       rotation:
-        (!this._isRotated ? Math.PI / 2 : 0) +
-        (this._isTapped ? Math.PI / 4 : 0),
+        (!this._isRotated ? Math.PI : 0) +
+        (this._isTapped ? Math.PI / 2 : 0),
       duration: 300,
       onComplete: () => (this._isRotated = !this._isRotated),
     });
