@@ -2,7 +2,7 @@ import { Chance } from "chance";
 import { ref } from "firebase/database";
 import { GameObjects, Scene } from "phaser";
 import { VIEW_HEIGHT, VIEW_WIDTH } from "../config";
-import { base_loot, base_monsters, base_treasure } from "../data/cards";
+import { base_char, base_eternal, base_loot, base_monsters, base_treasure } from "../data/cards";
 import { db } from "../firebase";
 import FourSoulsClient from "../game/client";
 import { GameState } from "../game/state";
@@ -49,7 +49,9 @@ export default class TableScene extends Scene {
     gameClient
       .init({
         p1: { userName: "Player1", userUid: "uid1" },
-        p2: { userName: "Player1", userUid: "uid1" },
+        p2: { userName: "Player2", userUid: "uid2" },
+        p3: { userName: "Player3", userUid: "uid3" },
+        p4: { userName: "Player4", userUid: "uid4" },
       })
       .start();
 
@@ -171,6 +173,26 @@ export default class TableScene extends Scene {
         -500,
         CardType.Monster,
         `base/monsters/${name}`
+      );
+      card.name = name;
+    });
+    base_char.forEach((name) => {
+      const card = new Card(
+        this,
+        this.width / 2,
+        -500,
+        CardType.Char,
+        `base/chars/${name}`
+      );
+      card.name = name;
+    });
+    base_eternal.forEach((name) => {
+      const card = new Card(
+        this,
+        this.width / 2,
+        -500,
+        CardType.Eternal,
+        `base/eternals/${name}`
       );
       card.name = name;
     });

@@ -348,3 +348,45 @@ export const base_none_monster_monster_cards = [
   "WeNeedtogoDeeper",
   "XLFLoor",
 ]
+
+export const base_char = [
+"BlueBaby",
+"Cain",
+"Eden",
+"Eve",
+"Isaac",
+"Judas",
+"Lazarus",
+"Lilith",
+"Maggy",
+"Samson",
+"TheForgotten",
+]
+
+export const base_eternal = [
+  "BloodLust",
+  "BookofBelial",
+  "D6",
+  "ForeverAlone",
+  "Incubus",
+  "LazarusRags",
+  "SleightofHand",
+  "TheBone",
+  "TheCurse",
+  "YumHeart"
+]
+
+export const base_char_data = {
+  "BlueBaby": {eternal: "ForeverAlone", health: 2, damage: 1},
+  "Cain": {eternal: "SleightofHand", health: 2, damage: 1},
+  "Eden": {eternal: null, health: 2, damage: 1},
+  "Eve": {eternal: "TheCurse", health: 2, damage: 1},
+  "Isaac": {eternal: "D6", health: 2, damage: 1},
+  "Judas": {eternal: "BookofBelial", health: 2, damage: 1},
+  "Lazarus": {eternal: "LazarusRags", health: 2, damage: 1},
+  "Lilith": {eternal: "Incubus", health: 2, damage: 1},
+  "Maggy": {eternal: "YumHeart", health: 2, damage: 1},
+  "Samson": {eternal: "BloodLust", health: 2, damage: 1},
+  "TheForgotten": {eternal: "TheBone", health: 2, damage: 1},
+}
+  
